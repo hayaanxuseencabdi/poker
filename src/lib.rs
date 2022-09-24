@@ -1,89 +1,31 @@
-#[derive(Debug, Hash, PartialEq, PartialOrd)]
-enum Rank {
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
-    Seven,
-    Eight,
-    Nine,
-    Ten,
-    Jack,
-    Queen,
-    King,
-    Ace,
-}
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_imports)]
 
-#[derive(Debug, Hash)]
-enum Suit {
-    Club,
-    Spade,
-    Heart,
-    Diamond,
-}
+mod card;
+mod hand;
+mod player;
+mod table;
 
-#[derive(Debug, Hash)]
-struct Card {
-    rank: Rank,
-    suit: Suit,
-}
-
-impl Card {
-    fn new(rank: Rank, suit: Suit) -> Self {
-        Card { rank, suit }
-    }
-}
-
-// Construct every permutation of hands and choose the winner from them
-// 5 * 4 * 3 = 60 possible hands in total
-#[derive(Debug, Hash)]
-struct Hand {
-    hole_cards: [Card; 2],
-    community_cards: [Option<Card>; 5],
-}
-
-impl Hand {
-    fn generate_all_possible_hands() -> Vec<[Card; 5]> {
-        vec![]
-    }
-}
-
-#[derive(Debug, Hash)]
-enum HandRanking {
-    HighCard,
-    Pair,
-    TwoPair,
-    ThreeOfAKind,
-    Straight,
-    Flush,
-    FullHouse,
-    FourOfAKind,
-    StraightFlush,
-    RoyalFlush,
-}
+use crate::card::*;
+use crate::hand::*;
+use crate::player::*;
+use crate::table::*;
 
 fn main() {
-    let hand = Hand {
-        hole_cards: [
-            Card::new(Rank::Ace, Suit::Club),
-            Card::new(Rank::King, Suit::Club),
-        ],
-        community_cards: [
-            Some(Card::new(Rank::Ace, Suit::Spade)),
-            Some(Card::new(Rank::King, Suit::Spade)),
-            Some(Card::new(Rank::Queen, Suit::Spade)),
-            Some(Card::new(Rank::Jack, Suit::Spade)),
-            Some(Card::new(Rank::Ten, Suit::Spade)),
-        ],
-    };
+    let hand = Hand::new([
+        Card::new(Rank::Ace, Suit::Spade),
+        Card::new(Rank::King, Suit::Spade),
+        Card::new(Rank::Queen, Suit::Spade),
+        Card::new(Rank::Jack, Suit::Spade),
+        Card::new(Rank::Ten, Suit::Spade),
+    ]);
     println!("{:#?}", hand);
-    println!("Ace > 10? {:#?}", Rank::Ace > Rank::Ten);
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    // use super::*;
 
     #[test]
     fn it_works() {
