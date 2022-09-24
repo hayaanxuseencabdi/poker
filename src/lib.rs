@@ -12,17 +12,6 @@ use crate::hand::*;
 use crate::player::*;
 use crate::table::*;
 
-fn main() {
-    let hand = Hand::new([
-        Card::new(Rank::Ace, Suit::Spade),
-        Card::new(Rank::King, Suit::Spade),
-        Card::new(Rank::Queen, Suit::Spade),
-        Card::new(Rank::Jack, Suit::Spade),
-        Card::new(Rank::Ten, Suit::Spade),
-    ]);
-    println!("{:#?}", hand);
-}
-
 #[cfg(test)]
 mod tests {
     // use super::*;
