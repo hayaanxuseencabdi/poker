@@ -2,7 +2,7 @@ use rand::{distributions::Uniform, thread_rng, Rng};
 use strum::{EnumCount, EnumIter, IntoEnumIterator};
 
 #[derive(
-    Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, strum::EnumCount, strum::EnumIter,
+    Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, strum::EnumCount, strum::EnumIter,
 )]
 pub(crate) enum Rank {
     Two,
@@ -30,13 +30,25 @@ pub(crate) enum Suit {
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub(crate) struct Card {
-    suit: Suit,
-    rank: Rank,
+    pub(crate) suit: Suit,
+    pub(crate) rank: Rank,
 }
 
 impl Card {
     pub(crate) fn new(suit: Suit, rank: Rank) -> Self {
         Self { suit, rank }
+    }
+}
+
+impl PartialOrd for Card {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.rank.partial_cmp(&other.rank)
+    }
+}
+
+impl Ord for Card {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.rank.cmp(&other.rank)
     }
 }
 
@@ -92,7 +104,7 @@ mod tests {
             let card = deck.pull_card();
             assert!(
                 !encountered_cards.contains(&card),
-                "somehow able to pull the same card from the deck twice"
+                "somehow able to pull the same card from a deck twice"
             );
             encountered_cards.insert(card);
         }

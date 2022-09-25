@@ -9,3 +9,8 @@ impl Player {
         Self { cards }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+}
