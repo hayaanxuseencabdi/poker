@@ -1,6 +1,9 @@
+use rand::{distributions::Uniform, thread_rng, Rng};
 use strum::{EnumCount, EnumIter, IntoEnumIterator};
 
-#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, EnumCount, EnumIter)]
+#[derive(
+    Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, strum::EnumCount, strum::EnumIter,
+)]
 pub(crate) enum Rank {
     Two,
     Three,
@@ -17,7 +20,7 @@ pub(crate) enum Rank {
     Ace,
 }
 
-#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, EnumCount, EnumIter)]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, strum::EnumCount, strum::EnumIter)]
 pub(crate) enum Suit {
     Club,
     Spade,
@@ -37,37 +40,43 @@ impl Card {
     }
 }
 
-#[derive(Debug, Hash)]
 pub(crate) struct Deck {
     cards: Vec<Card>,
-    // rng:
+    rng: Box<dyn rand::RngCore>,
 }
 
 impl Deck {
     pub(crate) fn new() -> Self {
-        let mut cards = Vec::with_capacity(Suit::COUNT * Rank::COUNT);
-        for suit in Suit::iter() {
-            for rank in Rank::iter() {
-                cards.push(Card::new(suit, rank));
-            }
+        Self {
+            cards: Self::generate_deck(),
+            rng: Box::new(rand::thread_rng()),
         }
-        Self { cards }
     }
 
     pub(crate) fn is_empty(&self) -> bool {
         self.cards.is_empty()
     }
 
-    pub(crate) fn shuffle_deck(&mut self) {
-        // TODO
+    pub(crate) fn reset_deck(&mut self) {
+        self.cards = Self::generate_deck();
     }
 
     pub(crate) fn pull_card(&mut self) -> Card {
         if self.cards.is_empty() {
             panic!("the deck has been depleted");
         }
-        // TODO: replace with randomly generated index in range [0, self.cards.size)
-        self.cards.swap_remove(0)
+        let distribution = rand::distributions::Uniform::new(0, self.cards.len());
+        self.cards.swap_remove(self.rng.sample(distribution))
+    }
+
+    fn generate_deck() -> Vec<Card> {
+        let mut cards = Vec::with_capacity(Suit::COUNT * Rank::COUNT);
+        for suit in Suit::iter() {
+            for rank in Rank::iter() {
+                cards.push(Card::new(suit, rank));
+            }
+        }
+        cards
     }
 }
 
@@ -81,12 +90,11 @@ mod tests {
         let mut encountered_cards = std::collections::HashSet::<Card>::new();
         while !deck.is_empty() {
             let card = deck.pull_card();
-            assert!(!encountered_cards.contains(&card), "able to pull the same card from a deck twice");
+            assert!(
+                !encountered_cards.contains(&card),
+                "somehow able to pull the same card from the deck twice"
+            );
             encountered_cards.insert(card);
         }
-    }
-
-    #[test]
-    fn it_works() {
     }
 }
